@@ -272,6 +272,30 @@ SessionManager.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/SessionManager.cpp.s
 .PHONY : SessionManager.cpp.s
 
+ThreadPool.obj: ThreadPool.cpp.obj
+.PHONY : ThreadPool.obj
+
+# target to build an object file
+ThreadPool.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/ThreadPool.cpp.obj
+.PHONY : ThreadPool.cpp.obj
+
+ThreadPool.i: ThreadPool.cpp.i
+.PHONY : ThreadPool.i
+
+# target to preprocess a source file
+ThreadPool.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/ThreadPool.cpp.i
+.PHONY : ThreadPool.cpp.i
+
+ThreadPool.s: ThreadPool.cpp.s
+.PHONY : ThreadPool.s
+
+# target to generate assembly for a file
+ThreadPool.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/ThreadPool.cpp.s
+.PHONY : ThreadPool.cpp.s
+
 UserManager.obj: UserManager.cpp.obj
 .PHONY : UserManager.obj
 
@@ -347,6 +371,9 @@ help:
 	@echo ... SessionManager.obj
 	@echo ... SessionManager.i
 	@echo ... SessionManager.s
+	@echo ... ThreadPool.obj
+	@echo ... ThreadPool.i
+	@echo ... ThreadPool.s
 	@echo ... UserManager.obj
 	@echo ... UserManager.i
 	@echo ... UserManager.s

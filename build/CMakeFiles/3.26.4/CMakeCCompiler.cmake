@@ -1,7 +1,7 @@
-set(CMAKE_C_COMPILER "C:/MINGWL/mingw64/bin/gcc.exe")
+set(CMAKE_C_COMPILER "C:/mingw64/bin/gcc.exe")
 set(CMAKE_C_COMPILER_ARG1 "")
 set(CMAKE_C_COMPILER_ID "GNU")
-set(CMAKE_C_COMPILER_VERSION "14.1.0")
+set(CMAKE_C_COMPILER_VERSION "13.1.0")
 set(CMAKE_C_COMPILER_VERSION_INTERNAL "")
 set(CMAKE_C_COMPILER_WRAPPER "")
 set(CMAKE_C_STANDARD_COMPUTED_DEFAULT "17")
@@ -21,11 +21,11 @@ set(CMAKE_C_SIMULATE_VERSION "")
 
 
 
-set(CMAKE_AR "C:/MINGWL/mingw64/bin/ar.exe")
-set(CMAKE_C_COMPILER_AR "C:/MINGWL/mingw64/bin/gcc-ar.exe")
-set(CMAKE_RANLIB "C:/MINGWL/mingw64/bin/ranlib.exe")
-set(CMAKE_C_COMPILER_RANLIB "C:/MINGWL/mingw64/bin/gcc-ranlib.exe")
-set(CMAKE_LINKER "C:/MINGWL/mingw64/bin/ld.exe")
+set(CMAKE_AR "C:/mingw64/bin/ar.exe")
+set(CMAKE_C_COMPILER_AR "C:/mingw64/bin/gcc-ar.exe")
+set(CMAKE_RANLIB "C:/mingw64/bin/ranlib.exe")
+set(CMAKE_C_COMPILER_RANLIB "C:/mingw64/bin/gcc-ranlib.exe")
+set(CMAKE_LINKER "C:/mingw64/bin/ld.exe")
 set(CMAKE_MT "")
 set(CMAKE_COMPILER_IS_GNUCC 1)
 set(CMAKE_C_COMPILER_LOADED 1)
@@ -66,7 +66,7 @@ endif()
 
 
 
-set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "C:/MINGWL/mingw64/lib/gcc/x86_64-w64-mingw32/14.1.0/include;C:/MINGWL/mingw64/lib/gcc/x86_64-w64-mingw32/14.1.0/include-fixed;C:/MINGWL/mingw64/x86_64-w64-mingw32/include")
-set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "mingw32;gcc;mingwex;kernel32;pthread;advapi32;shell32;user32;kernel32;iconv;mingw32;gcc;mingwex;kernel32")
-set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "C:/MINGWL/mingw64/lib/gcc/x86_64-w64-mingw32/14.1.0;C:/MINGWL/mingw64/lib/gcc;C:/MINGWL/mingw64/x86_64-w64-mingw32/lib;C:/MINGWL/mingw64/lib")
+set(CMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES "C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include;C:/mingw64/include;C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed;C:/mingw64/x86_64-w64-mingw32/include")
+set(CMAKE_C_IMPLICIT_LINK_LIBRARIES "mingw32;gcc;moldname;mingwex;kernel32;pthread;advapi32;shell32;user32;kernel32;mingw32;gcc;moldname;mingwex;kernel32")
+set(CMAKE_C_IMPLICIT_LINK_DIRECTORIES "C:/mingw64/lib/gcc/x86_64-w64-mingw32/13.1.0;C:/mingw64/lib/gcc;C:/mingw64/x86_64-w64-mingw32/lib;C:/mingw64/lib")
 set(CMAKE_C_IMPLICIT_LINK_FRAMEWORK_DIRECTORIES "")
