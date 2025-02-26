@@ -6,55 +6,40 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # --- Set CMP0074 Policy ---
-# This makes find_package honor BOOST_ROOT, BOOST_INCLUDEDIR, etc.
 cmake_policy(SET CMP0074 NEW)
 
-# --- vcpkg Integration and Boost Settings ---
-# Set these to your vcpkg installed location for the x64-mingw-static triplet.
-set(BOOST_ROOT "C:/vcpkg/installed/x64-mingw-static")
-set(BOOST_INCLUDEDIR "C:/vcpkg/installed/x64-mingw-static/include")
-set(BOOST_LIBRARYDIR "C:/vcpkg/installed/x64-mingw-static/lib")
-
-# Force CMake to search only in the provided paths
+# --- vcpkg Integration and Dependency Paths ---
+if(NOT DEFINED VCPKG_ROOT)
+    set(VCPKG_ROOT "C:/vcpkg")
+endif()
+set(BOOST_ROOT "${VCPKG_ROOT}/installed/x64-mingw-static")
+set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
+set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
 set(Boost_NO_SYSTEM_PATHS ON)
-
-# Options to force static linking (if desired)
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
+set(Boost_NO_BOOST_CMAKE ON)
 
-# For MinGW with vcpkg, the Boost libraries might be built with an extra tag.
-# If your library names are, for example: libboost_system-mt-x64-1_86.a, then you might not need this hint.
-# Comment out or adjust the following line as needed:
-# set(Boost_COMPILER "-mgw-mt")
-
-# (Optional) Enable verbose Boost debug output for troubleshooting
-#set(Boost_DEBUG ON)
-
-# --- Find Boost ---
-find_package(Boost REQUIRED COMPONENTS system thread log log_setup)
+# --- Find Boost --- 
+# Include additional components required by Boost.Log
+find_package(Boost REQUIRED COMPONENTS system thread log log_setup date_time)
 if (NOT Boost_FOUND)
-    message(FATAL_ERROR "Could NOT find Boost. Check BOOST_ROOT, BOOST_LIBRARYDIR, and ensure the required libraries exist!")
+    message(FATAL_ERROR "Could NOT find Boost. Check BOOST_ROOT and BOOST_LIBRARYDIR!")
 else()
     message(STATUS "Found Boost version ${Boost_VERSION} in: ${BOOST_LIBRARYDIR}")
 endif()
 
 # --- Find Other Dependencies ---
-# nlohmann_json: Set the directory where its config file is located.
-set(nlohmann_json_DIR "C:/vcpkg/installed/x64-mingw-static/share/nlohmann_json")
+set(nlohmann_json_DIR "${VCPKG_ROOT}/installed/x64-mingw-static/share/nlohmann_json")
 find_package(nlohmann_json REQUIRED)
 
-# SQLite3: Ensure the paths are correct.
-set(SQLite3_INCLUDE_DIR "C:/vcpkg/installed/x64-mingw-static/include")
-set(SQLite3_LIBRARY "C:/vcpkg/installed/x64-mingw-static/lib/libsqlite3.a")
+# SQLite3: Setup include and library paths
+set(SQLite3_INCLUDE_DIR "${VCPKG_ROOT}/installed/x64-mingw-static/include")
+set(SQLite3_LIBRARY "${VCPKG_ROOT}/installed/x64-mingw-static/lib/libsqlite3.a")
 find_package(SQLite3 REQUIRED)
 
-# --- Include Directories ---
-include_directories(${Boost_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories("C:/vcpkg/installed/x64-mingw-static/include")
-
-# --- Define the Executable and Its Sources ---
+# --- Define the executable and its sources ---
 add_executable(main
     main.cpp
     Server.cpp
@@ -63,12 +48,21 @@ add_executable(main
     SessionManager.cpp
     ChatRoom.cpp
     ChatRoomManager.cpp
-    Database.cpp   # SQLite integration file
+    Database.cpp
+    ThreadPool.cpp  # ThreadPool implementation in a separate source file
 )
 
-# --- Link Libraries ---
-target_link_libraries(main
-    ${Boost_LIBRARIES}
+# --- Target-Specific Includes and Linking ---
+target_include_directories(main PRIVATE 
+    ${Boost_INCLUDE_DIRS}
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${SQLite3_INCLUDE_DIR}
+)
+target_link_libraries(main PRIVATE
+    ${Boost_LIBRARIES}                # Now includes system, thread, log, log_setup, date_time
     nlohmann_json::nlohmann_json
     ${SQLite3_LIBRARY}
 )
+
+# Define BOOST_DATE_TIME_NO_LIB to disable auto-linking for Boost.DateTime
+target_compile_definitions(main PRIVATE BOOST_DATE_TIME_NO_LIB)

@@ -1,40 +1,34 @@
-#ifndef DATABASE_HPP
-#define DATABASE_HPP
+/**
+ * @file Database.hpp
+ * @brief Declaration of the Database class for SQLite integration.
+ */
 
-#include <sqlite3.h>
-#include <string>
-#include <mutex>
-#include <vector>
-#include <functional>
-
-class Database {
-public:
-    // Get the singleton instance of the Database manager.
-    static Database& instance();
-
-    // Open the database file (e.g., "chat.db"). Returns true on success.
-    bool open(const std::string& dbFile);
-
-    // Close the database connection.
-    void close();
-
-    // Execute an SQL command that does not return data (e.g., CREATE, INSERT).
-    // Returns true on success.
-    bool execute(const std::string& sql);
-
-    // Execute a query and process each row with a callback.
-    // The callback is of the form: void callback(int argc, char** argv, char** azColName)
-    bool query(const std::string& sql,
-               std::function<void(int argc, char** argv, char** azColName)> callback);
-
-private:
-    Database();
-    ~Database();
-    Database(const Database&) = delete;
-    Database& operator=(const Database&) = delete;
-
-    sqlite3* db_;
-    std::mutex mutex_;
-};
-
-#endif // DATABASE_HPP
+ #ifndef DATABASE_HPP
+ #define DATABASE_HPP
+ 
+ #include <string>
+ #include <sqlite3.h>
+ 
+ namespace ChatServer {
+ 
+ /**
+  * @brief Manages database connections and operations.
+  */
+ class Database {
+ public:
+     explicit Database(const std::string& dbFile);
+     ~Database();
+ 
+     bool open();
+     void close();
+     bool executeQuery(const std::string& query);
+ 
+ private:
+     std::string dbFile;
+     sqlite3* db;
+ };
+ 
+ } // namespace ChatServer
+ 
+ #endif // DATABASE_HPP
+ 

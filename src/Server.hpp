@@ -1,16 +1,35 @@
-#ifndef SERVER_HPP
-#define SERVER_HPP
+/**
+ * @file Server.hpp
+ * @brief Declaration of the Server class.
+ */
 
-#include <boost/asio.hpp>
-
-class Server {
-public:
-    Server(boost::asio::io_context& io_context, unsigned short port);
-    void start();
-    void stop();
-private:
-    void do_accept();
-    boost::asio::ip::tcp::acceptor acceptor_;
-};
-
-#endif // SERVER_HPP
+ #ifndef SERVER_HPP
+ #define SERVER_HPP
+ 
+ #include <memory>
+ #include "ThreadPool.hpp"  // For background task execution
+ 
+ namespace ChatServer {
+ 
+ /**
+  * @brief Manages incoming connections and delegates session handling.
+  *
+  * Integrates a thread pool for offloading background tasks.
+  */
+ class Server {
+ public:
+     Server();
+     ~Server();
+ 
+     void start();
+     void stop();
+ 
+ private:
+     class Impl;
+     std::unique_ptr<Impl> pImpl;
+ };
+ 
+ } // namespace ChatServer
+ 
+ #endif // SERVER_HPP
+ 

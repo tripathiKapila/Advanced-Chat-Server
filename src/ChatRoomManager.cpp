@@ -1,29 +1,41 @@
-#include "ChatRoomManager.hpp"
-#include "Session.hpp"
+/**
+ * @file ChatRoomManager.cpp
+ * @brief Implementation of the ChatRoomManager class.
+ */
 
-std::shared_ptr<ChatRoom> ChatRoomManager::joinRoom(const std::string& room_name, std::shared_ptr<Session> session) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    auto it = rooms_.find(room_name);
-    if (it == rooms_.end()) {
-        auto room = std::make_shared<ChatRoom>(room_name);
-        rooms_[room_name] = room;
-        room->join(session);
-        return room;
-    } else {
-        it->second->join(session);
-        return it->second;
-    }
-}
-
-void ChatRoomManager::leaveRoom(const std::string& room_name, std::shared_ptr<Session> session) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    auto it = rooms_.find(room_name);
-    if (it != rooms_.end())
-        it->second->leave(session);
-}
-
-std::shared_ptr<ChatRoom> ChatRoomManager::getRoom(const std::string& room_name) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    auto it = rooms_.find(room_name);
-    return (it != rooms_.end()) ? it->second : nullptr;
-}
+ #include "ChatRoomManager.hpp"
+ #include <iostream>
+ #include <mutex>
+ 
+ namespace ChatServer {
+ 
+ ChatRoomManager::ChatRoomManager() {}
+ 
+ ChatRoomManager::~ChatRoomManager() {}
+ 
+ std::shared_ptr<ChatRoom> ChatRoomManager::createChatRoom(const std::string& name) {
+     auto room = std::make_shared<ChatRoom>(name);
+     {
+         std::lock_guard<std::mutex> lock(mutex_);
+         chatRooms[name] = room;
+     }
+     std::cout << "Chat room created: " << name << std::endl;
+     return room;
+ }
+ 
+ void ChatRoomManager::deleteChatRoom(const std::string& name) {
+     {
+         std::lock_guard<std::mutex> lock(mutex_);
+         chatRooms.erase(name);
+     }
+     std::cout << "Chat room deleted: " << name << std::endl;
+ }
+ 
+ std::shared_ptr<ChatRoom> ChatRoomManager::getChatRoom(const std::string& name) const {
+     std::lock_guard<std::mutex> lock(mutex_);
+     auto it = chatRooms.find(name);
+     return (it != chatRooms.end()) ? it->second : nullptr;
+ }
+ 
+ } // namespace ChatServer
+ 

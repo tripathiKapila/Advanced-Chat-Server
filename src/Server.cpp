@@ -1,43 +1,51 @@
-#include "Server.hpp"
-#include "Session.hpp"
-#include <boost/log/trivial.hpp>
-#include <iostream>
+/**
+ * @file Server.cpp
+ * @brief Implementation of the Server class.
+ */
 
-Server::Server(boost::asio::io_context& io_context, unsigned short port)
-    : acceptor_(io_context, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port))
-{
-    BOOST_LOG_TRIVIAL(info) << "Server created on port " << port;
-}
-
-void Server::start() {
-    BOOST_LOG_TRIVIAL(info) << "Server is starting to accept connections...";
-    do_accept();
-}
-
-void Server::stop() {
-    boost::system::error_code ec;
-    acceptor_.close(ec);
-    if (ec)
-        BOOST_LOG_TRIVIAL(error) << "Error closing acceptor: " << ec.message();
-    else
-        BOOST_LOG_TRIVIAL(info) << "Acceptor closed successfully.";
-}
-
-void Server::do_accept() {
-    acceptor_.async_accept(
-        [this](boost::system::error_code ec, boost::asio::ip::tcp::socket socket) {
-            try {
-                if (!ec) {
-                    BOOST_LOG_TRIVIAL(info) << "Accepted new connection.";
-                    std::make_shared<Session>(std::move(socket))->start();
-                } else {
-                    BOOST_LOG_TRIVIAL(error) << "Accept error: " << ec.message();
-                }
-            } catch (std::exception& e) {
-                BOOST_LOG_TRIVIAL(error) << "Exception in do_accept lambda: " << e.what();
-            }
-            if (acceptor_.is_open())
-                do_accept();
-        }
-    );
-}
+ #include "Server.hpp"
+ #include <iostream>
+ #include <thread>
+ #include <chrono>
+ 
+ namespace ChatServer {
+ 
+ class Server::Impl {
+ public:
+     bool running;
+     // Create a thread pool with 4 worker threads for background tasks.
+     ThreadPool threadPool;
+ 
+     Impl() : running(false), threadPool(4) {}
+ };
+ 
+ Server::Server() : pImpl(std::make_unique<Impl>()) {}
+ 
+ Server::~Server() {
+     if (pImpl->running) {
+         stop();
+     }
+ }
+ 
+ void Server::start() {
+     pImpl->running = true;
+     std::cout << "Server started." << std::endl;
+ 
+     // Example: Enqueue a background task using the thread pool.
+     pImpl->threadPool.enqueue([]{
+         std::this_thread::sleep_for(std::chrono::milliseconds(100));
+         std::cout << "Background task executed on thread "
+                   << std::this_thread::get_id() << std::endl;
+     });
+ 
+     // (Start networking threads to accept client connections here.)
+ }
+ 
+ void Server::stop() {
+     pImpl->running = false;
+     std::cout << "Server stopped." << std::endl;
+     // (Cleanup resources and stop networking threads here.)
+ }
+ 
+ } // namespace ChatServer
+ 
