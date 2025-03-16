@@ -173,9 +173,9 @@ if %errorlevel% neq 0 goto :VCEnd</Command>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\Users\kapil\OneDrive\Desktop\Advanced-Chat-Server\build\src\main.vcxproj">
-      <Project>{F43BAC24-AA37-33EC-8A1A-CF8F6BCFD913}</Project>
-      <Name>main</Name>
+    <ProjectReference Include="C:\Users\kapil\OneDrive\Desktop\Advanced-Chat-Server\build\src\AdvancedChatServer.vcxproj">
+      <Project>{22CD8FF9-51AF-34FC-AA83-B9B85631C414}</Project>
+      <Name>AdvancedChatServer</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
