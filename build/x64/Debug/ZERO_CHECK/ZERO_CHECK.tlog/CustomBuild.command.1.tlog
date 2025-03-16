@@ -1,0 +1,10 @@
+^C:\USERS\KAPIL\ONEDRIVE\DESKTOP\ADVANCED-CHAT-SERVER\BUILD\CMAKEFILES\837E9DFC1758AF2217F53FCC837BE474\GENERATE.STAMP.RULE
+setlocal
+C:\mingw64\bin\cmake.exe -SC:/Users/kapil/OneDrive/Desktop/Advanced-Chat-Server -BC:/Users/kapil/OneDrive/Desktop/Advanced-Chat-Server/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/kapil/OneDrive/Desktop/Advanced-Chat-Server/build/AdvancedChatServer.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
