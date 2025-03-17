@@ -15,7 +15,11 @@ ThreadPool::ThreadPool(size_t numThreads) : stop(false) {
                     task = std::move(this->tasks.front());
                     this->tasks.pop();
                 }
-                task();
+                try {
+                    task();
+                } catch (...) {
+                    // Silently catch any exceptions from tasks
+                }
             }
         });
     }

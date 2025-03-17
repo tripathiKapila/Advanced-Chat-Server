@@ -3,35 +3,70 @@
  * @brief Declaration of the ChatRoom class.
  */
 
- #ifndef CHATROOM_HPP
- #define CHATROOM_HPP
- 
- #include <string>
- #include <vector>
- #include <mutex>
- 
- namespace ChatServer {
- 
- /**
-  * @brief Represents a chat room for client sessions.
-  */
- class ChatRoom {
- public:
-     explicit ChatRoom(const std::string& name);
-     ~ChatRoom();
- 
-     void addSession(const std::string& sessionId);
-     void removeSession(const std::string& sessionId);
-     std::string getName() const;
-     std::vector<std::string> getSessions() const;
- 
- private:
-     std::string roomName;
-     std::vector<std::string> sessions;
-     mutable std::mutex mutex_;
- };
- 
- } // namespace ChatServer
- 
- #endif // CHATROOM_HPP
+#pragma once
+
+#include <string>
+#include <vector>
+#include <set>
+#include <map>
+#include <memory>
+#include <mutex>
+
+namespace ChatServer {
+
+class Session;
+class SessionManager;
+
+/**
+ * @brief Represents a chat room for client sessions.
+ */
+class ChatRoom {
+public:
+    ChatRoom(const std::string& name);
+    ~ChatRoom() = default;
+
+    // Add a session to the chat room
+    void addSession(const std::string& sessionId);
+    
+    // Remove a session from the chat room
+    void removeSession(const std::string& sessionId);
+    
+    // Broadcast a message to all sessions in the chat room
+    void broadcastMessage(const std::string& message, const std::string& senderSessionId);
+    
+    // Get the name of the chat room
+    const std::string& getName() const;
+    
+    // Get all sessions in the chat room
+    std::set<std::string> getSessions() const;
+
+private:
+    std::string name;
+    std::set<std::string> sessions;
+    mutable std::mutex mutex;
+};
+
+class ChatRoomManager {
+public:
+    ChatRoomManager();
+    ~ChatRoomManager() = default;
+
+    // Create a new chat room
+    std::shared_ptr<ChatRoom> createChatRoom(const std::string& name);
+    
+    // Get a chat room by name
+    std::shared_ptr<ChatRoom> getChatRoom(const std::string& name);
+    
+    // Remove a chat room
+    void removeChatRoom(const std::string& name);
+    
+    // Get all chat rooms
+    std::vector<std::shared_ptr<ChatRoom>> getAllRooms() const;
+
+private:
+    std::map<std::string, std::shared_ptr<ChatRoom>> chatRooms;
+    mutable std::mutex mutex;
+};
+
+} // namespace ChatServer
  

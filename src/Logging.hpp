@@ -1,49 +1,57 @@
 #ifndef LOGGING_HPP
 #define LOGGING_HPP
 
-// Only define BOOST_DATE_TIME_NO_LIB if not already defined.
-#ifndef BOOST_DATE_TIME_NO_LIB
-#define BOOST_DATE_TIME_NO_LIB
-#endif
-
-#include <boost/date_time/posix_time/posix_time.hpp>  // Full definition for ptime
-#include <boost/log/support/date_time.hpp>            // Provides date_time formatter support
-#include <boost/log/core.hpp>
-#include <boost/log/trivial.hpp>
-#include <boost/log/expressions.hpp>
-#include <boost/log/utility/setup/common_attributes.hpp>
-#include <boost/log/utility/setup/console.hpp>
-#include <boost/log/utility/setup/file.hpp>
+#include <string>
+#include <fstream>
+#include <iostream>
+#include <mutex>
+#include <ctime>
 
 namespace Logging {
 
-inline void init_logging() {
-    namespace logging = boost::log;
-    namespace keywords = boost::log::keywords;
-    namespace expr = boost::log::expressions;
+// Simple logging functions
+void init_logging();
+void init_logging(const std::string& logFile);
+void debug(const std::string& message);
+void info(const std::string& message);
+void warning(const std::string& message);
+void error(const std::string& message);
+void fatal(const std::string& message);
 
-    // Setup console logging with formatted timestamp and severity.
-    logging::add_console_log(
-        std::clog,
-        keywords::format = (
-            expr::stream
-                << "[" << expr::format_date_time<boost::posix_time::ptime>(
-                    expr::attr<boost::posix_time::ptime>("TimeStamp"),
-                    "%Y-%m-%d %H:%M:%S"
-                ) << "] "
-                << "[" << logging::trivial::severity << "] : "
-                << expr::smessage
-        )
-    );
+// Implementation details
+namespace detail {
 
-    // Set a global filter to log messages with severity >= info.
-    logging::core::get()->set_filter(
-        logging::trivial::severity >= logging::trivial::info
-    );
+enum LogLevel {
+    DEBUG_LEVEL,
+    INFO_LEVEL,
+    WARNING_LEVEL,
+    ERROR_LEVEL,
+    FATAL_LEVEL
+};
 
-    // Add common attributes like TimeStamp.
-    logging::add_common_attributes();
-}
+class Logger {
+public:
+    static Logger& getInstance();
+    void setLevel(LogLevel level);
+    void log(LogLevel level, const std::string& message);
+    void init(const std::string& logFile = "server.log");
+
+private:
+    Logger();
+    ~Logger();
+    Logger(const Logger&) = delete;
+    Logger& operator=(const Logger&) = delete;
+
+    std::ofstream logFile;
+    LogLevel currentLevel;
+    std::mutex mutex;
+    bool initialized;
+
+    std::string levelToString(LogLevel level);
+    std::string getCurrentTime();
+};
+
+} // namespace detail
 
 } // namespace Logging
 

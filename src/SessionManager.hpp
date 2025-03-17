@@ -3,35 +3,62 @@
  * @brief Declaration of the SessionManager class.
  */
 
- #ifndef SESSIONMANAGER_HPP
- #define SESSIONMANAGER_HPP
- 
- #include "Session.hpp"
- #include <unordered_map>
- #include <memory>
- #include <string>
- #include <mutex>
- 
- namespace ChatServer {
- 
- /**
-  * @brief Manages active client sessions.
-  */
- class SessionManager {
- public:
-     SessionManager();
-     ~SessionManager();
- 
-     std::shared_ptr<Session> createSession(const std::string& sessionId);
-     void removeSession(const std::string& sessionId);
-     std::shared_ptr<Session> getSession(const std::string& sessionId) const;
- 
- private:
-     std::unordered_map<std::string, std::shared_ptr<Session>> sessions;
-     mutable std::mutex mutex_;
- };
- 
- } // namespace ChatServer
- 
- #endif // SESSIONMANAGER_HPP
+#pragma once
+
+#include <memory>
+#include <map>
+#include <mutex>
+#include <string>
+
+namespace ChatServer {
+
+class Session;
+
+/**
+ * @brief Manages active client sessions.
+ */
+class SessionManager : public std::enable_shared_from_this<SessionManager> {
+private:
+    // Private constructor for singleton
+    SessionManager();
+    
+    // Structure to allow creation of shared_ptr with private constructor
+    struct SessionManagerCreator {
+        static std::shared_ptr<SessionManager> create() {
+            return std::shared_ptr<SessionManager>(new SessionManager());
+        }
+    };
+    
+public:
+    // Singleton instance
+    static std::shared_ptr<SessionManager> getInstance();
+    
+    // Add a session
+    void addSession(std::shared_ptr<Session> session);
+    
+    // Remove a session
+    void removeSession(const std::string& sessionId);
+    
+    // Get a session by ID
+    std::shared_ptr<Session> getSession(const std::string& sessionId);
+    
+    // Get all sessions
+    std::map<std::string, std::shared_ptr<Session>> getAllSessions() const;
+    
+    // Broadcast a message to all sessions
+    void broadcastMessage(const std::string& message, const std::string& senderSessionId = "");
+    
+    // Public destructor
+    ~SessionManager() = default;
+
+private:
+    static std::shared_ptr<SessionManager> instance;
+    std::map<std::string, std::shared_ptr<Session>> sessions;
+    mutable std::mutex mutex;
+    
+    // Friend declaration for the creator
+    friend struct SessionManagerCreator;
+};
+
+} // namespace ChatServer
  

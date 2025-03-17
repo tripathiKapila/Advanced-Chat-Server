@@ -5,37 +5,18 @@ project(AdvancedChatServer)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- Set CMP0074 Policy ---
-cmake_policy(SET CMP0074 NEW)
+# --- Set output directories ---
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR})
 
-# --- vcpkg Integration and Dependency Paths ---
-if(NOT DEFINED VCPKG_ROOT)
-    set(VCPKG_ROOT "C:/vcpkg")
+# --- Windows-specific definitions ---
+if(WIN32)
+    add_definitions(-D_WIN32_WINNT=0x0601)  # Windows 7 or later
 endif()
-set(BOOST_ROOT "${VCPKG_ROOT}/installed/x64-windows")
-set(BOOST_INCLUDEDIR "${BOOST_ROOT}/include")
-set(BOOST_LIBRARYDIR "${BOOST_ROOT}/lib")
-set(Boost_NO_SYSTEM_PATHS ON)
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-set(Boost_NO_BOOST_CMAKE ON)
-
-# --- Find Boost --- 
-# Include additional components required by Boost.Log
-find_package(Boost REQUIRED COMPONENTS system thread log log_setup date_time)
-if (NOT Boost_FOUND)
-    message(FATAL_ERROR "Could NOT find Boost. Check BOOST_ROOT and BOOST_LIBRARYDIR!")
-else()
-    message(STATUS "Found Boost version ${Boost_VERSION} in: ${BOOST_LIBRARYDIR}")
-endif()
-
-# --- Find Other Dependencies ---
-find_package(nlohmann_json CONFIG REQUIRED)
-find_package(unofficial-sqlite3 CONFIG REQUIRED)
 
 # --- Define the executable and its sources ---
-add_executable(main
+add_executable(AdvancedChatServer
     main.cpp
     Server.cpp
     Session.cpp
@@ -45,19 +26,26 @@ add_executable(main
     ChatRoomManager.cpp
     Database.cpp
     ThreadPool.cpp
+    Logging.cpp
 )
 
+# --- Find Other Dependencies ---
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(unofficial-sqlite3 CONFIG REQUIRED)
+
 # --- Target-Specific Includes and Linking ---
-target_include_directories(main PRIVATE 
-    ${Boost_INCLUDE_DIRS}
+target_include_directories(AdvancedChatServer PRIVATE 
+    "C:/vcpkg/installed/x64-windows/include"
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-target_link_libraries(main PRIVATE
-    ${Boost_LIBRARIES}
+# Link against libraries
+target_link_libraries(AdvancedChatServer PRIVATE
     nlohmann_json::nlohmann_json
     unofficial::sqlite3::sqlite3
 )
 
-# Define BOOST_DATE_TIME_NO_LIB to disable auto-linking for Boost.DateTime
-target_compile_definitions(main PRIVATE BOOST_DATE_TIME_NO_LIB)
+# Copy the executable to the build directory
+add_custom_command(TARGET AdvancedChatServer POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:AdvancedChatServer> ${CMAKE_BINARY_DIR}
+)
